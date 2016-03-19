@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {List, Map} from 'immutable';
+import {List, Map, fromJS} from 'immutable';
 
 import {setEntries, next, vote} from '../src/core';
 
@@ -131,6 +131,18 @@ describe('application logic', () => {
           'Trainspotting': 4,
           '28 Days Later': 2
         })
+      }));
+    });
+
+    it('ignores vote for entry not contained in current pair', () => {
+      const state = Map(fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        tally: { Trainspotting: 1 }
+      }));
+      const nextState = vote(state, 'Sunshine');
+      expect(nextState).to.equal(fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        tally: { Trainspotting: 1 }
       }));
     });
 
