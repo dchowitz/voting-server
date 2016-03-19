@@ -21,7 +21,7 @@ describe('reducer', () => {
     const action = {type: 'NEXT'};
     const nextState = reducer(initialState, action);
     expect(nextState).to.equal(fromJS({
-      vote: {pair: ['Trainspotting', '28 Days Later']},
+      vote: {id: 1, pair: ['Trainspotting', '28 Days Later']},
       entries: []
     }));
   });

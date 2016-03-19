@@ -29,22 +29,24 @@ describe('application logic', () => {
 
   describe('next', () => {
 
-    it('takes the next two entries under vote', () => {
+    it('takes the next two entries under vote and initialzes vote id to 1', () => {
       const state = Map({
         entries: List.of('Trainspotting', '28 Days Later', 'Sunshine')
       });
       const nextState = next(state);
       expect(nextState).to.equal(Map({
         vote: Map({
+          id: 1,
           pair: List.of('Trainspotting', '28 Days Later')
         }),
         entries: List.of('Sunshine')
       }));
     });
 
-    it('puts the winner of current vote back to entries', () => {
+    it('puts the winner of current vote back to entries and increments vote id', () => {
       const state = Map({
         vote: Map({
+          id: 1,
           pair: List.of('Trainspotting', '28 Days Later'),
           tally: Map({
             'Trainspotting': 4,
@@ -56,6 +58,7 @@ describe('application logic', () => {
       const nextState = next(state);
       expect(nextState).to.equal(Map({
         vote: Map({
+          id: 2,
           pair: List.of('Sunshine', 'Millions')
         }),
         entries: List.of('127 Hours', 'Trainspotting')
@@ -65,6 +68,7 @@ describe('application logic', () => {
     it('puts both from tied vote back to entries', () => {
       const state = Map({
         vote: Map({
+          id: 1,
           pair: List.of('Trainspotting', '28 Days Later'),
           tally: Map({
             'Trainspotting': 3,
@@ -76,6 +80,7 @@ describe('application logic', () => {
       const nextState = next(state);
       expect(nextState).to.equal(Map({
         vote: Map({
+          id: 2,
           pair: List.of('Sunshine', 'Millions')
         }),
         entries: List.of('127 Hours', 'Trainspotting', '28 Days Later')
@@ -85,6 +90,7 @@ describe('application logic', () => {
     it('marks the winner when just one entry left', () => {
       const state = Map({
         vote: Map({
+          id: 1,
           pair: List.of('Trainspotting', '28 Days Later'),
           tally: Map({
             'Trainspotting': 4,

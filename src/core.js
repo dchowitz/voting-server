@@ -17,12 +17,15 @@ export function next(state) {
       .set('winner', entries.first());
   }
 
-  return state.merge({
-    vote: Map({
-      pair: entries.take(2)
-    }),
-    entries: entries.skip(2)
-  });
+  const voteId = (state.getIn(['vote', 'id']) || 0);
+  return state
+    .merge({
+      vote: Map({
+        id: voteId + 1,
+        pair: entries.take(2)
+      }),
+      entries: entries.skip(2)
+    });
 }
 
 export function vote(voteState, entry) {
