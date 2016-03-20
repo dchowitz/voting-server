@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf out && mkdir out && cp entries.json out",
+    "compile": "npm run clean && node_modules/.bin/babel ./src/**/*.js index.js -s true -d out",
+    "debug": "npm run compile && node --debug out/index.js --host 0.0.0.0",
     "start": "babel-node index.js --host 0.0.0.0",
     "test": "mocha --compilers js:babel-core/register --require ./test/test-setup.js --recursive",
     "test:watch": "npm run test -- --watch"
@@ -19,7 +22,8 @@
     "chai-immutable": "^1.5.3",
     "eslint": "^2.3.0",
     "eslint-plugin-react": "^4.2.1",
-    "mocha": "^2.4.5"
+    "mocha": "^2.4.5",
+    "rimraf": "^2.5.2"
   },
   "dependencies": {
     "immutable": "^3.7.6",
@@ -29,6 +33,7 @@
   "babel": {
     "presets": [
       "es2015"
-    ]
+    ],
+    "sourceMaps": "true"
   }
 }
