@@ -28,14 +28,19 @@ export function next(state) {
     });
 }
 
-export function vote(voteState, entry) {
+export function vote(voteState, vote) {
   const currentPair = voteState.get('pair');
-  if (currentPair.contains(entry)) {
-    return voteState.updateIn(
-      ['tally', entry],
-      0,
-      tally => tally + 1
-    );
+  if (currentPair.contains(vote.entry)) {
+    const voters = (voteState.get('voters') || Map()).merge({[vote.voterId]: vote.entry}).toJS();
+    const tally = Object.keys(voters).reduce((prev, voterId) => {
+      const vote = voters[voterId];
+      prev[vote] = (prev[vote] || 0) + 1;
+      return prev;
+    }, {});
+
+    return voteState
+      .setIn(['tally'], Map(tally))
+      .setIn(['voters'], Map(voters));
   }
   return voteState;
 }

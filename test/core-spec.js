@@ -109,45 +109,113 @@ describe('application logic', () => {
 
   describe('vote', () => {
 
-    it('creates a tally for the voted entry', () => {
+    it('creates a tally and voter for the voted entry', () => {
       const state = Map({
         pair: List.of('Trainspotting', '28 Days Later')
       });
-      const nextState = vote(state, 'Trainspotting');
+      const nextState = vote(state, {
+        voterId: 'voter1',
+        entry: 'Trainspotting'
+      });
       expect(nextState).to.equal(Map({
         pair: List.of('Trainspotting', '28 Days Later'),
+        voters: Map(fromJS({
+          voter1: 'Trainspotting'
+        })),
         tally: Map({
           'Trainspotting': 1
         })
       }));
     });
 
-    it('adds to existing tally for the voted entry', () => {
-      const state = Map({
-        pair: List.of('Trainspotting', '28 Days Later'),
-        tally: Map({
+    it('adds to existing tally and creates a voter for the voted entry', () => {
+      const state = fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting',
+          voter2: '28 Days Later',
+          voter3: 'Trainspotting',
+          voter4: 'Trainspotting',
+          voter5: '28 Days Later'
+        },
+        tally: {
           'Trainspotting': 3,
           '28 Days Later': 2
-        })
+        }
       });
-      const nextState = vote(state, 'Trainspotting');
-      expect(nextState).to.equal(Map({
-        pair: List.of('Trainspotting', '28 Days Later'),
-        tally: Map({
+      const nextState = vote(state, {
+        voterId: 'voter6',
+        entry: 'Trainspotting'
+      });
+      expect(nextState).to.equal(fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting',
+          voter2: '28 Days Later',
+          voter3: 'Trainspotting',
+          voter4: 'Trainspotting',
+          voter5: '28 Days Later',
+          voter6: 'Trainspotting'
+        },
+        tally: {
           'Trainspotting': 4,
           '28 Days Later': 2
-        })
+        }
+      }));
+    });
+
+    it('adjusts tally and voter for the voted entry', () => {
+      const state = fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting',
+          voter2: '28 Days Later',
+          voter3: 'Trainspotting',
+          voter4: 'Trainspotting',
+          voter5: '28 Days Later'
+        },
+        tally: {
+          'Trainspotting': 3,
+          '28 Days Later': 2
+        }
+      });
+      const nextState = vote(state, {
+        voterId: 'voter4',
+        entry: '28 Days Later'
+      });
+      expect(nextState).to.equal(fromJS({
+        pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting',
+          voter2: '28 Days Later',
+          voter3: 'Trainspotting',
+          voter4: '28 Days Later',
+          voter5: '28 Days Later'
+        },
+        tally: {
+          'Trainspotting': 2,
+          '28 Days Later': 3
+        }
       }));
     });
 
     it('ignores vote for entry not contained in current pair', () => {
       const state = Map(fromJS({
         pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting'
+        },
         tally: { Trainspotting: 1 }
       }));
-      const nextState = vote(state, 'Sunshine');
+      const nextState = vote(state, {
+        voterId: 'voter2',
+        entry: 'Sunshine'
+      });
       expect(nextState).to.equal(fromJS({
         pair: ['Trainspotting', '28 Days Later'],
+        voters: {
+          voter1: 'Trainspotting'
+        },
         tally: { Trainspotting: 1 }
       }));
     });
