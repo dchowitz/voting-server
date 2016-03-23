@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {List, Map, fromJS} from 'immutable';
 
-import {setEntries, next, vote} from '../src/core';
+import {setEntries, next, vote, reset} from '../src/core';
 
 describe('application logic', () => {
 
@@ -11,8 +11,9 @@ describe('application logic', () => {
       const state = Map();
       const entries = List.of('Trainspotting', '28 Days Later');
       const nextState = setEntries(state, entries);
-      expect(nextState).to.equal(Map({
-        entries: List.of('Trainspotting', '28 Days Later')
+      expect(nextState).to.equal(fromJS({
+        entries: ['Trainspotting', '28 Days Later'],
+        originalEntries: ['Trainspotting', '28 Days Later']
       }));
     });
 
@@ -20,8 +21,9 @@ describe('application logic', () => {
       const state = Map();
       const entries = ['Trainspotting', '28 Days Later'];
       const nextState = setEntries(state, entries);
-      expect(nextState).to.equal(Map({
-        entries: List.of('Trainspotting', '28 Days Later')
+      expect(nextState).to.equal(fromJS({
+        entries: ['Trainspotting', '28 Days Later'],
+        originalEntries: ['Trainspotting', '28 Days Later']
       }));
     });
 
@@ -105,6 +107,36 @@ describe('application logic', () => {
       }));
     });
 
+  });
+
+  describe('reset', () => {
+
+    it('cleares the vote, set the entries to the original entry collection and initializes the first vote (next)', () => {
+      const state = fromJS({
+        vote: {
+          pair: ['Sunshine', '128 Hours'],
+          voters: {
+            voter1: 'Sunshine',
+            voter2: '128 Hours'
+          },
+          tally: {
+            'Sunshine': 1,
+            '128 Hours': 1
+          }
+        },
+        entries: ['Trainspotting'],
+        originalEntries: ['Trainspotting', '28 Days Later', 'Sunshine', '128 Hours']
+      });
+      const nextState = reset(state);
+      expect(nextState).to.equal(fromJS({
+        vote: {
+          id: 1,
+          pair: ['Trainspotting', '28 Days Later']
+        },
+        entries: ['Sunshine', '128 Hours'],
+        originalEntries: ['Trainspotting', '28 Days Later', 'Sunshine', '128 Hours']
+      }));
+    });
   });
 
   describe('vote', () => {

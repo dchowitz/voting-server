@@ -3,7 +3,9 @@ import {List, Map} from 'immutable';
 export const INITIAL_STATE = Map();
 
 export function setEntries(state, entries) {
-  return state.set('entries', List(entries));
+  return state
+    .set('originalEntries', List(entries))
+    .set('entries', List(entries));
 }
 
 export function next(state) {
@@ -26,6 +28,10 @@ export function next(state) {
       }),
       entries: entries.skip(2)
     });
+}
+
+export function reset(state) {
+  return next(setEntries(state.remove('vote'), state.get('originalEntries')));
 }
 
 export function vote(voteState, vote) {
